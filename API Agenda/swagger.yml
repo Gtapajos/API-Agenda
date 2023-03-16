@@ -1,0 +1,139 @@
+openapi: 3.0.0
+
+info:
+  title: "MPS Flask REST API"
+  description: "Atividade de MPS"
+  version: "1.0.0"
+
+servers:
+  - url: "/api"
+
+components:
+  schemas:
+    User:
+      type: "object"
+      required:
+        - user_id
+      properties:
+        user_name:
+          type: "string"
+        user_id:
+          type: "string"
+    Event:
+      type: "object"
+      required:
+        - event_id
+        - user_id
+        - event_date
+        - event_time
+      properties:
+        event_id:
+          type: "string"
+        user_id:
+          type: "string"
+        event_name:
+          type: "string"
+        event_date:
+          type: "string"
+          format: "date"
+        event_time:
+          type: "string"
+          format: "time"
+
+  parameters:
+    user_id:
+      name: "user_id"
+      description: "ID of the person to get"
+      in: path
+      required: true
+      schema:
+        type: "string"
+    event_id:
+      name: "event_id"
+      description: "ID of the event to get"
+      in: path
+      required: true
+      schema:
+        type: "string"
+
+paths:
+  /user:
+    get:
+      operationId: "user.read_all"
+      tags:
+        - "User"
+      summary: "Read the list of users"
+      responses:
+        "200":
+          description: "Successfully read user list"
+    post:
+      operationId: "user.create"
+      tags:
+        - "User"
+      summary: "Create a new user"
+      requestBody:
+        description: "User to create"
+        required: true
+        content:
+          application/json:
+            schema:
+              x-body-name: "user"
+              $ref: "#/components/schemas/User"
+      responses:
+        "201":
+          description: "Successfully created user"
+
+  /user/{user_id}:
+    get:
+      operationId: "user.read_one"
+      tags:
+        - "User"
+      summary: "Read one user"
+      parameters:
+        - $ref: "#/components/parameters/user_id"
+      responses:
+        "200":
+          description: "Successfully read user"
+    delete:
+      operationId: "user.delete"
+      tags:
+        - "User"
+      summary: "Delete a user"
+      parameters:
+        - $ref: "#/components/parameters/user_id"
+      responses:
+        "204":
+          description: "Successfully deleted user"
+
+  /user/{user_id}/event:
+    post:
+      operationId: "event.create"
+      tags:
+        - "Event"
+      summary: "Create a new event for a user"
+      parameters:
+        - $ref: "#/components/parameters/user_id"
+      requestBody:
+        description: "Event to create"
+        required: true
+        content:
+          application/json:
+            schema:
+              x-body-name: "event"
+              $ref: "#/components/schemas/Event"
+      responses:
+        "201":
+          description: "Successfully created event"
+
+  /user/{user_id}/event/{event_id}:
+    get:
+      operationId: "event.read_one"
+      tags:
+        - "Event"
+      summary: "Read one event for a user"
+      parameters:
+        - $ref: "#/components/parameters/user_id"
+        - $ref: "#/components/parameters/event_id"
+      responses:
+        "200":
+          description: "Successfully read event"
